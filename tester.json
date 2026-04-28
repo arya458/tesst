@@ -1,0 +1,121 @@
+{
+  "log": {
+    "level": "warning"
+  },
+  "dns": {
+    "independent_cache": true,
+    "disable_cache": false,
+    "strategy": "ipv4_only",
+    "rules": [
+      {
+        "domain": ["www.google.com"],
+        "server": "dns-direct"
+      },
+      {
+        "rule_set": ["geosite-telegram"],
+        "server": "fakeip"
+      }
+    ],
+    "final": "dns-direct",
+    "servers": [
+      {
+        "type": "local",
+        "tag": "dns-direct"
+      },
+      {
+        "type": "fakeip",
+        "tag": "fakeip",
+        "inet4_range": "10.20.152.0/22"
+      }
+    ]
+  },
+  "inbounds": [
+    {
+      "auto_route": true,
+      "endpoint_independent_nat": true,
+      "address": ["172.19.0.1/28"],
+      "mtu": 9000,
+      "stack": "mixed",
+      "tag": "tun-in",
+      "type": "tun"
+    },
+    {
+      "listen": "127.0.0.1",
+      "listen_port": 2080,
+      "tag": "mixed-in",
+      "type": "mixed"
+    }
+  ],
+  "outbounds": [
+    {
+      "tag": "direct",
+      "type": "direct"
+    },
+    {
+      "tag": "telegram-mtproxy-1",
+      "type": "mtproto",
+      "server": "194.156.121.13",
+      "server_port": 443,
+      "secret": "ee4c49d2d0e5c6b61e6b8a4e2f5e7c8d"
+    },
+    {
+      "tag": "telegram-mtproxy-2",
+      "type": "mtproto",
+      "server": "185.181.230.5",
+      "server_port": 80,
+      "secret": "d1b9a9a5c3e8f3a1e1d5f8b2c4a6e9f1"
+    }
+  ],
+  "route": {
+    "auto_detect_interface": true,
+    "default_domain_resolver": {
+      "server": "dns-direct",
+      "strategy": "ipv4_only"
+    },
+    "rule_set": [
+      {
+        "type": "inline",
+        "tag": "geosite-telegram",
+        "rules": [
+          {
+            "domain_keyword": [
+              "telegram",
+              "t.me",
+              "tdesktop",
+              "telegra"
+            ],
+            "domain_suffix": [
+              ".telegram.org",
+              ".t.me",
+              ".telegra.ph",
+              ".tdesktop.com"
+            ]
+          }
+        ]
+      }
+    ],
+    "rules": [
+      {
+        "action": "sniff"
+      },
+      {
+        "action": "hijack-dns",
+        "protocol": ["dns"]
+      },
+      {
+        "action": "resolve",
+        "strategy": "ipv4_only"
+      },
+      {
+        "domain": ["geosite:telegram"],
+        "action": "route",
+        "outbound": "telegram-mtproxy-1",
+        "fallback": "telegram-mtproxy-2"
+      },
+      {
+        "action": "route",
+        "outbound": "direct"
+      }
+    ]
+  }
+}

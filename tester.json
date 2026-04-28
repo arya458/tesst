@@ -8,7 +8,7 @@
     "strategy": "ipv4_only",
     "rules": [
       {
-        "domain": ["www.google.com"],
+        "domain": ["telegram.org", "t.me", "td.telegram.org", "core.telegram.org"],
         "server": "dns-direct"
       },
       {
@@ -50,20 +50,6 @@
     {
       "tag": "direct",
       "type": "direct"
-    },
-    {
-      "tag": "proxy-1",
-      "type": "mtproto",
-      "server": "185.181.230.5",
-      "server_port": 443,
-      "secret": "ee4c49d2d0e5c6b61e6b8a4e2f5e7c8d"
-    },
-    {
-      "tag": "proxy-2",
-      "type": "mtproto",
-      "server": "194.156.121.13",
-      "server_port": 80,
-      "secret": "d1b9a9a5c3e8f3a1e1d5f8b2c4a6e9f1"
     }
   ],
   "route": {
@@ -78,8 +64,30 @@
         "tag": "geosite-telegram",
         "rules": [
           {
-            "domain_keyword": ["telegram", "t.me", "tdesktop", "telegra"],
-            "domain_suffix": [".telegram.org", ".t.me", ".telegra.ph", ".tdesktop.com"]
+            "domain_keyword": ["telegram", "t.me", "td.telegram", "core.telegram"],
+            "domain": [
+              "telegram.org",
+              "t.me",
+              "td.telegram.org",
+              "core.telegram.org",
+              "updates.telegram.org",
+              "venus.telegram.org",
+              "pluto.telegram.org",
+              "web.telegram.org",
+              "telegram.dog",
+              "telegram.space",
+              "graph.org",
+              "telegra.ph"
+            ],
+            "domain_suffix": [
+              ".telegram.org",
+              ".t.me",
+              ".td.telegram.org",
+              ".core.telegram.org",
+              ".updates.telegram.org",
+              ".web.telegram.org",
+              ".telegra.ph"
+            ]
           }
         ]
       }
@@ -97,10 +105,10 @@
         "strategy": "ipv4_only"
       },
       {
-        "domain": ["geosite:telegram"],
         "action": "route",
-        "outbound": "proxy-1",
-        "fallback": "proxy-2"
+        "outbound": "direct",
+        "override_address": "www.soft98.ir",
+        "rule_set": ["geosite-telegram"]
       },
       {
         "action": "route",

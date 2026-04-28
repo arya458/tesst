@@ -67,19 +67,11 @@
     {
       "tag": "fragment-out",
       "type": "direct",
-      "tls_fragment": {
-        "enabled": true,
-        "size": "1-1",
-        "sleep": "4"
-      },
       "fragment": true
     },
     {
       "tag": "full-fragment",
       "type": "direct",
-      "tls_fragment": {
-        "enabled": true
-      },
       "fragment": true
     }
   ],

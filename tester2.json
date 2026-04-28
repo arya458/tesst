@@ -1,0 +1,145 @@
+{
+  "log": {
+    "level": "warn",
+    "timestamp": true
+  },
+  "dns": {
+    "strategy": "ipv4_only",
+    "servers": [
+      {
+        "tag": "dns-local",
+        "address": "local",
+        "detour": "dns-direct"
+      },
+      {
+        "tag": "dns-direct",
+        "address": "https://cloudflare-dns.com/dns-query",
+        "address_resolver": "dns-local"
+      }
+    ],
+    "rules": [
+      {
+        "outbound": "dns-direct",
+        "server": "dns-local",
+        "domain_suffix": ["ir"]
+      },
+      {
+        "outbound": "any",
+        "domain_suffix": ["ir"],
+        "server": "dns-local"
+      }
+    ],
+    "fakeip": {
+      "enabled": true,
+      "inet4_range": "198.18.0.0/15",
+      "inet6_range": "fc00::/18"
+    }
+  },
+  "inbounds": [
+    {
+      "type": "tun",
+      "tag": "tun-in",
+      "inet4_address": "172.19.0.1/30",
+      "auto_route": true,
+      "endpoint_independent_nat": true,
+      "stack": "system"
+    },
+    {
+      "type": "mixed",
+      "tag": "mixed-in",
+      "listen": "127.0.0.1",
+      "listen_port": 10808
+    }
+  ],
+  "outbounds": [
+    {
+      "tag": "direct",
+      "type": "direct"
+    },
+    {
+      "tag": "dns-direct",
+      "type": "direct"
+    },
+    {
+      "tag": "block",
+      "type": "block"
+    },
+    {
+      "tag": "fragment-out",
+      "type": "direct",
+      "tls_fragment": {
+        "enabled": true,
+        "size": "1-1",
+        "sleep": "4"
+      },
+      "fragment": true
+    },
+    {
+      "tag": "full-fragment",
+      "type": "direct",
+      "tls_fragment": {
+        "enabled": true
+      },
+      "fragment": true
+    }
+  ],
+  "route": {
+    "geoip": {
+      "path": "https://raw.githubusercontent.com/Chocolate4U/Iran-sing-box-rules/release/geoip-lite.db",
+      "download_detour": "direct"
+    },
+    "geosite": {
+      "path": "https://raw.githubusercontent.com/Chocolate4U/Iran-sing-box-rules/release/geosite-lite.db",
+      "download_detour": "direct"
+    },
+    "rule_set": [
+      {
+        "type": "remote",
+        "tag": "geoip-ir",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-sing-box-rules/release/geoip-ir.srs",
+        "download_detour": "direct"
+      },
+      {
+        "type": "remote",
+        "tag": "geosite-ir",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-sing-box-rules/release/geosite-ir.srs",
+        "download_detour": "direct"
+      }
+    ],
+    "rules": [
+      {
+        "outbound": "dns-direct",
+        "protocol": "dns"
+      },
+      {
+        "outbound": "fragment-out",
+        "port": 443,
+        "network": "tcp"
+      },
+      {
+        "outbound": "fragment-out",
+        "protocol": "tls",
+        "network": "tcp"
+      },
+      {
+        "outbound": "dns-direct",
+        "domain_suffix": ["ir"]
+      },
+      {
+        "outbound": "dns-direct",
+        "rule_set": ["geoip-ir", "geosite-ir"]
+      },
+      {
+        "outbound": "fragment-out",
+        "domain_suffix": ["google.com", "youtube.com", "telegram.org"]
+      },
+      {
+        "outbound": "block",
+        "domain_suffix": ["ads", "doubleclick"]
+      }
+    ],
+    "final": "fragment-out"
+  }
+}

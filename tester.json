@@ -52,16 +52,16 @@
       "type": "direct"
     },
     {
-      "tag": "telegram-mtproxy-1",
+      "tag": "proxy-1",
       "type": "mtproto",
-      "server": "194.156.121.13",
+      "server": "185.181.230.5",
       "server_port": 443,
       "secret": "ee4c49d2d0e5c6b61e6b8a4e2f5e7c8d"
     },
     {
-      "tag": "telegram-mtproxy-2",
+      "tag": "proxy-2",
       "type": "mtproto",
-      "server": "185.181.230.5",
+      "server": "194.156.121.13",
       "server_port": 80,
       "secret": "d1b9a9a5c3e8f3a1e1d5f8b2c4a6e9f1"
     }
@@ -78,18 +78,8 @@
         "tag": "geosite-telegram",
         "rules": [
           {
-            "domain_keyword": [
-              "telegram",
-              "t.me",
-              "tdesktop",
-              "telegra"
-            ],
-            "domain_suffix": [
-              ".telegram.org",
-              ".t.me",
-              ".telegra.ph",
-              ".tdesktop.com"
-            ]
+            "domain_keyword": ["telegram", "t.me", "tdesktop", "telegra"],
+            "domain_suffix": [".telegram.org", ".t.me", ".telegra.ph", ".tdesktop.com"]
           }
         ]
       }
@@ -109,8 +99,8 @@
       {
         "domain": ["geosite:telegram"],
         "action": "route",
-        "outbound": "telegram-mtproxy-1",
-        "fallback": "telegram-mtproxy-2"
+        "outbound": "proxy-1",
+        "fallback": "proxy-2"
       },
       {
         "action": "route",
